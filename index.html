@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Covid-19 Watch</title>
+</head>
+<body>
+<div class="chart-container">
+    <canvas id="84034017"></canvas>
+</div>
+<div class="chart-container">
+    <canvas id="84036061"></canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script>
+    const days = generateDays(31);
+
+    function generateDays(n) {
+        const days = [];
+        const today = moment().subtract(n + 1, 'days');
+
+        for (let i = n; i > 0; i --) {
+            days.push(today.add(1, 'days').format('M/D/YY'));
+        }
+
+        return days;
+    }
+
+    function downloadData(url, uids) {
+        Papa.parse(url, {
+            download: true,
+            header: true,
+            dynamicTyping: true,
+            complete: function(results) {
+                for (const item of results.data) {
+                    if (!uids.includes(item.UID)) { continue; }
+                    processData(item);
+                }
+            }
+        });
+    }
+
+    function processData(item) {
+        const confirmedCases = [];
+        for (const day of days) {
+            confirmedCases.push(item[day]);
+        }
+
+        const newCases = [];
+        for (let i = 1; i < confirmedCases.length; i ++) {
+            newCases.push(confirmedCases[i] - confirmedCases[i - 1]);
+        }
+
+        const averageNewCases = [];
+        for (let i = 7; i < confirmedCases.length; i ++) {
+            averageNewCases.push(newCases.slice(i - 7, i).reduce((a, b) => { return a + b }) / 7);
+        }
+
+        showData(item, item.Admin2, newCases.slice(6), averageNewCases);
+    }
+
+    function showData(item, title, newCases, averageNewCases) {
+        const ctx = document.getElementById(item.UID).getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: days.slice(7),
+                datasets: [{
+                    label: 'New Cases',
+                    data: newCases
+                },
+                    {
+                        label: '7 Days Average New Cases',
+                        data: averageNewCases,
+                        type: 'line'
+                    }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: title
+                }
+            }
+        });
+    }
+
+    function main() {
+        downloadData(
+            "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv",
+            [84034017, 84036061]
+        );
+    }
+
+    main();
+</script>
+</body>
+</html>
