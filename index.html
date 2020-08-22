@@ -50,6 +50,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script>
     const days = generateDays(31);
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+
     const stateData = {};
 
     function generateDays(n) {
@@ -127,12 +137,17 @@
                 labels: days.slice(7),
                 datasets: [{
                     label: 'New Cases',
-                    data: newCases
+                    data: newCases,
+                    backgroundColor: window.chartColors.orange,
+                    order: 1
                 },
                 {
                     label: '7 Days Average New Cases',
                     data: averageNewCases,
-                    type: 'line'
+                    type: 'line',
+                    fill: false,
+                    backgroundColor: window.chartColors.red,
+                    borderColor: window.chartColors.red
                 }]
             },
             options: {
