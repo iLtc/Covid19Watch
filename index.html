@@ -30,6 +30,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script>
     const days = generateDays(31);
+    const stateData = {};
 
     function generateDays(n) {
         const days = [];
@@ -42,24 +43,33 @@
         return days;
     }
 
-    function downloadData(url, uids) {
+    function downloadData(url, countyIds, states) {
         Papa.parse(url, {
             download: true,
             header: true,
             dynamicTyping: true,
             complete: function(results) {
                 for (const item of results.data) {
-                    if (!uids.includes(item.UID)) { continue; }
-                    processData(item);
+                    if (countyIds.includes(item.UID)) {
+                        processData(item.UID, item.Admin2, item);
+                    }
+
+                    if (states.includes(item.Province_State)) {
+                        processStateData(item);
+                    }
+                }
+
+                for (const state in stateData) {
+                    processData(state, state, stateData[state])
                 }
             }
         });
     }
 
-    function processData(item) {
+    function processData(id, title, data) {
         const confirmedCases = [];
         for (const day of days) {
-            confirmedCases.push(item[day]);
+            confirmedCases.push(data[day]);
         }
 
         const newCases = [];
@@ -72,11 +82,25 @@
             averageNewCases.push(newCases.slice(i - 7, i).reduce((a, b) => { return a + b }) / 7);
         }
 
-        showData(item, item.Admin2, newCases.slice(6), averageNewCases);
+        showData(id, title, newCases.slice(6), averageNewCases);
     }
 
-    function showData(item, title, newCases, averageNewCases) {
-        const ctx = document.getElementById(item.UID).getContext('2d');
+    function processStateData(item) {
+        if (!(item.Province_State in stateData)) {
+            stateData[item.Province_State] = {};
+        }
+
+        for (const day of days) {
+            if (!(day in stateData[item.Province_State])) {
+                stateData[item.Province_State][day] = 0;
+            }
+
+            stateData[item.Province_State][day] += item[day];
+        }
+    }
+
+    function showData(id, title, newCases, averageNewCases) {
+        const ctx = document.getElementById(id).getContext('2d');
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
