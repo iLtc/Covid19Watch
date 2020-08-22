@@ -5,12 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Covid-19 Watch</title>
     <style>
-        .chart-container {
-            width: 50%;
-            float: left;
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1600px;
+                margin: auto;
+            }
+            .chart-container {
+                width: 50%;
+                float: left;
+            }
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1399px) {
+            .container {
+                max-width: 800px;
+                margin: auto;
+            }
             .chart-container {
                 width: 100%;
                 float: none;
@@ -19,18 +29,22 @@
     </style>
 </head>
 <body>
-<div class="chart-container">
-    <canvas id="84034017"></canvas>
-</div>
-<div class="chart-container">
-    <canvas id="84036061"></canvas>
+<div class="container">
+    <div class="chart-container">
+        <canvas id="84034017"></canvas>
+    </div>
     <div class="chart-container">
         <canvas id="New Jersey"></canvas>
+    </div>
+    <div style="clear: both;"></div>
+    <div class="chart-container">
+        <canvas id="84036061"></canvas>
     </div>
     <div class="chart-container">
         <canvas id="New York"></canvas>
     </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.2.0/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
