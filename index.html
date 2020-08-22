@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Covid-19 Watch</title>
+    <style>
+        .chart-container {
+            width: 50%;
+            float: left;
+        }
+
+        @media (max-width: 1200px) {
+            .chart-container {
+                width: 100%;
+                float: none;
+            }
+        }
+
+    </style>
 </head>
 <body>
 <div class="chart-container">
@@ -71,11 +85,11 @@
                     label: 'New Cases',
                     data: newCases
                 },
-                    {
-                        label: '7 Days Average New Cases',
-                        data: averageNewCases,
-                        type: 'line'
-                    }]
+                {
+                    label: '7 Days Average New Cases',
+                    data: averageNewCases,
+                    type: 'line'
+                }]
             },
             options: {
                 title: {
